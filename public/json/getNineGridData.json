@@ -1,0 +1,122 @@
+{
+    "resultCode": 0,
+    "resultMsg": "OK",
+    "data": [
+        {
+            "groupList": [
+                {
+                    "groupId": 5,
+                    "warnCount": 0,
+                    "groupName": "1ta12",
+                    "groupStatus": 2,
+                    "groupRelationList": [],
+                    "criticalCount": 0
+                },
+                {
+                    "groupId": 6,
+                    "warnCount": 0,
+                    "groupName": "1ta11asdasdasddsad",
+                    "groupStatus": 2,
+                    "groupRelationList": [],
+                    "criticalCount": 0
+                },
+                {
+                    "groupId": 7,
+                    "warnCount": 0,
+                    "groupName": "任务名称abc",
+                    "groupStatus": 2,
+                    "groupRelationList": [],
+                    "criticalCount": 0
+                },
+                {
+                    "groupId": 8,
+                    "warnCount": 0,
+                    "groupName": "任务名称ab(不能和原有跑批分组名称重复)",
+                    "groupStatus": 2,
+                    "groupRelationList": [],
+                    "expectedEndTime": "22:23:00",
+                    "expectedStartTime": "17:17:00",
+                    "criticalCount": 0
+                },
+                {
+                    "groupId": 9,
+                    "warnCount": 0,
+                    "groupName": "任务名称ab(不能和原有跑批分组名称重复)jobcode",
+                    "groupStatus": 2,
+                    "groupRelationList": [],
+                    "expectedEndTime": "22:23:00",
+                    "expectedStartTime": "17:17:00",
+                    "criticalCount": 0
+                },
+                {
+                    "groupId": 11,
+                    "warnCount": 0,
+                    "groupName": "任务名称ab(不能和原有跑批分组名称重复)jobcode003",
+                    "groupStatus": 2,
+                    "groupRelationList": [],
+                    "expectedEndTime": "22:23:00",
+                    "expectedStartTime": "17:17:00",
+                    "criticalCount": 0
+                },
+                {
+                    "groupId": 12,
+                    "warnCount": 0,
+                    "groupName": "2",
+                    "groupStatus": 2,
+                    "groupRelationList": [],
+                    "criticalCount": 0
+                },
+                {
+                    "groupId": 13,
+                    "warnCount": 0,
+                    "groupName": "21",
+                    "groupStatus": 2,
+                    "groupRelationList": [],
+                    "criticalCount": 0
+                },
+                {
+                    "groupId": 14,
+                    "warnCount": 0,
+                    "groupName": "211",
+                    "groupStatus": 2,
+                    "groupRelationList": [
+                        19
+                    ],
+                    "criticalCount": 0
+                },
+                {
+                    "groupId": 15,
+                    "warnCount": 0,
+                    "groupName": "我是新数据15",
+                    "groupStatus": 0,
+                    "groupRelationList": [
+                        10
+                    ],
+                    "expectedEndTime": "23:23:00",
+                    "expectedStartTime": "23:23:00",
+                    "criticalCount": 0
+                },
+                {
+                    "groupId": 16,
+                    "warnCount": 0,
+                    "groupName": "我是新数据12",
+                    "groupStatus": 2,
+                    "groupRelationList": [
+                        6
+                    ],
+                    "criticalCount": 0
+                },
+                {
+                    "groupId": 17,
+                    "warnCount": 0,
+                    "groupName": "我是新数据1",
+                    "groupStatus": 2,
+                    "groupRelationList": [],
+                    "criticalCount": 0
+                }
+            ],
+            "domainId": 0,
+            "domainName": null
+        }
+    ]
+}

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body>
+     <canvas width="850" height="550" id="canvas"></canvas> 
+</body>
+<script src="http://localhost:5000/js/jquery.min.js"></script>
+<script src="http://localhost:5000/js/underscore.js"></script>
+<script src="http://localhost:5000/js/timer.js"></script>
+<script src="http://localhost:5000/js/jtopo.js"></script>
+<script>
+          var life = 5,
+          runbat,
+          oldData,//旧数据
+          //计时器
+          timer = null;
+          timer = new Timer({
+            tick: 1,
+            ontick: function () {
+              // runbat.loadPageDate();
+            },
+            onstart: function () {
+              console.log('timer')
+              runbat.loadPageDate();
+            }
+          });
+          timer.on('end', function () {
+            this.start(life);
+          });
+            runbat= {
+               init:function(){
+                    timer.stop();
+                    timer.start(life);
+               },
+               loadPageDate:function(){
+                    var getNineGridDataUrl = 'http://localhost:5000/json/getNineGridData.json';
+                    $.getJSON(getNineGridDataUrl, function(json){
+                              var data = json.data[0].groupList;
+                              runbat.draw(data);
+                     });
+               },
+               draw:function(data){
+                    var newData = _.extend({},true,data);//每次加载的新数据
+                    //第一次加载进来为旧数据的原始数据
+                    if(oldData){
+                         //对旧数据跟新数据进行对比，得出是否需要重新加载
+                         if(_.isEqual(oldData,newData)){
+                              console.log("数据没更新，是一样的");
+                         } else {
+                              console.log("数据已经更新啦！");
+                              var curNewData = runbat.cloneDifferenceArr(oldData,newData);//将不同的对象遍历并克隆出来，用于后面的遍历画图
+                              oldData = _.extend({},true,newData);
+                              runbat.changeCanvas(curNewData);
+                         }
+                    } else {
+                         oldData = _.extend({},true,newData);
+                         runbat.drawCanvas(newData);
+                    }
+                    // oldData = _.extend({},true,data);
+                    // console.log(oldData);
+
+               },
+               drawCanvas:function(){
+                         console.log("我正在画图呢");
+                         var canvas = document.getElementById('canvas');
+                         var stage = new JTopo.Stage(canvas);
+                         var scene = new JTopo.Scene(stage);    
+                         var container = new JTopo.Container('边界自动变化');
+                           container.textPosition = 'Middle_Center';
+                           container.fontColor = '100,255,0';
+                           container.font = '18pt 微软雅黑';
+                           container.borderColor = '255,0,0';
+                           container.borderRadius = 30; // 圆角
+                           scene.add(container);
+                         var listArr = [{"x":100,"y":100},{"x":400,"y":100},{"x":100,"y":200},{"x":400,"y":200}];
+                           for(var i=0; i<4; i++){
+                               var node = new JTopo.Node("A_"+i);    
+                               node.textPosition = "Middle_Center";
+                               node.setLocation(listArr[i].x, listArr[i].y);
+                               scene.add(node);
+                               container.add(node);
+                           }
+                           var container1 = new JTopo.Container('边界自动变化');
+                           container1.textPosition = 'Middle_Center';
+                           container1.fontColor = '100,255,0';
+                           container1.font = '18pt 微软雅黑';
+                           container1.borderColor = '255,0,0';
+                           container1.borderRadius = 30; // 圆角
+                           scene.add(container1);
+                         var listArr = [{"x":100,"y":300},{"x":400,"y":300},{"x":100,"y":400},{"x":400,"y":400}];
+                           for(var i=0; i<4; i++){
+                               var node = new JTopo.Node("A_"+i);    
+                               node.textPosition = "Middle_Center";
+                               node.setLocation(listArr[i].x, listArr[i].y);
+                               scene.add(node);
+                               container1.add(node);
+                           }
+                         var text = '';//连线文字
+                         var dashedPattern =4; //虚线
+                         var arrowsRadius = 8;//箭头大小
+                         var direction = "left";//连线方向
+                         var width = 50;//拐点宽度
+                         var siderRadius = 0;//拐点大小
+                         var from = runbat.newNode(100, 100, 30, 30,'start',container,scene);
+                         var to = runbat.newNode(100, 300, 30, 30,'end',container1,scene);
+                         runbat.doublePointLink(from, to, text, direction, dashedPattern,siderRadius, arrowsRadius,width, scene);
+                         from.getBound();
+                         container.mousedrag(function(){
+                              console.log(this.getBound().top);
+                              var curStartLinks = runbat.getAllElement(scene)[0];
+                              var curEndLinks = runbat.getAllElement(scene)[1];
+                              console.log(curEndLinks.getBound());
+                              curStartLinks.setLocation(50, from.y + (from.height / 2));
+                              // curEndLinks.setLocation(from.x - width, to.y+(to.height / 2));
+                         })
+                         container1.mousedrag(function(){
+                              console.log(this.getBound().top);
+                              var curStartLinks = runbat.getAllElement(scene)[0];
+                              var curEndLinks = runbat.getAllElement(scene)[1];
+                              // curStartLinks.setLocation(from.x - width, from.y + (from.height / 2));
+                              curEndLinks.setLocation(50, to.y+(to.height / 2));
+                         })
+               },
+               newNode:function(x, y, w, h, text,container,scene){
+                         var node = new JTopo.Node(text);
+                          node.setLocation(x, y);
+                          node.setSize(w, h);
+                          scene.add(node);
+                          container.add(node);
+                          return node;
+               },
+               cloneDifferenceArr:function(oldArr,newArr){
+                    var curNewDifferentArr=[];
+                    for (var i = 0; i < _.pairs(newArr).length; i++) {
+                         if(!_.isEqual(oldArr[i],newArr[i])){
+                              curNewDifferentArr.push(newArr[i]);
+                         }
+                    }
+                    return curNewDifferentArr;
+               },
+               changeCanvas:function(curNewData){
+                    console.log(curNewData);
+
+               },
+                    /**
+                  * 双节点连线
+                  * @param nodeA
+                  * @param nodeZ
+                  * @param text
+                  * @param direction
+                  * @param dashedPattern
+                  * @param siderRadius
+                  * @param arrowsRadius
+                  * @param width
+                  * @param scene
+                  */
+                 doublePointLink: function (nodeA, nodeZ, text, direction, dashedPattern,siderRadius, arrowsRadius,width, scene) {
+                     var firstLinkNode = new JTopo.CircleNode("");
+                     firstLinkNode.radius = siderRadius;
+                     firstLinkNode.elementType="firstLinkNode";
+                     firstLinkNode.groupId = nodeZ.groupId+'_line_'+0;
+                     if(direction == 'left'){
+                         firstLinkNode.setLocation(nodeA.x - width, nodeA.y + (nodeA.height / 2));
+                     } else if(direction == 'right') {
+                         firstLinkNode.setLocation(nodeA.x + width, nodeA.y + (nodeA.height / 2));
+                     }
+                     firstLinkNode.borderRadius = 1;
+                     scene.add(firstLinkNode);
+                     var StartLink = runbat.newLink(nodeA, firstLinkNode, text, dashedPattern, 0, scene);
+                     scene.add(StartLink);
+                     var secondLinkNode = new JTopo.CircleNode("");
+                     secondLinkNode.radius = siderRadius;
+                     secondLinkNode.elementType="secondLinkNode";
+                     secondLinkNode.groupId = nodeZ.groupId+'_line_'+1;
+                     if(direction == 'left'){
+                         secondLinkNode.setLocation(nodeA.x - width, nodeZ.y+(nodeZ.height / 2));
+                     } else if(direction == 'right') {
+                         secondLinkNode.setLocation(nodeA.x + width, nodeZ.y+(nodeZ.height / 2));
+                     }
+                     secondLinkNode.borderRadius = 1;
+                     scene.add(secondLinkNode);
+                     var middleLink = runbat.newLink(firstLinkNode, secondLinkNode, text, dashedPattern,0, scene);
+                     scene.add(middleLink);
+                     var endLink = runbat.newLink(secondLinkNode, nodeZ, text, dashedPattern,arrowsRadius, scene);
+                     scene.add(endLink);
+                 },
+                 /**
+                  * 简单连线
+                  * @param nodeA
+                  * @param nodeZ
+                  * @param text
+                  * @param dashedPattern
+                  * @param arrowsRadius
+                  * @param scene
+                  */
+                 newLink: function (nodeA, nodeZ, text, dashedPattern, arrowsRadius, scene) {
+                     var link = new JTopo.Link(nodeA, nodeZ, text);
+                     link.arrowsRadius = arrowsRadius; //箭头大小
+                     link.lineWidth = 1; // 线宽
+                     link.dashedPattern = dashedPattern; // 虚线
+                     link.bundleOffset = 60; // 折线拐角处的长度
+                     link.bundleGap = 20; // 线条之间的间隔
+                     link.textOffsetY = 3; // 文本偏移量（向下3个像素）
+                     link.strokeColor = '0,200,255';
+                     scene.add(link);
+                     return link;
+                 },
+                 /**
+                  * 获取所有的node节点
+                  * @param scene
+                  */
+                 getAllElement: function (scene) {
+                     var nodes = scene.childs;
+                     //克隆所有的节点
+                     var ems = [];
+                     for(var i=0;i<nodes.length;i++){
+                         if(nodes[i].elementType=="firstLinkNode"||nodes[i].elementType=="secondLinkNode"){
+                              ems.push(nodes[i]);
+                         }
+                     }
+                     return ems;
+                 }
+            }
+          runbat.init();
+</script>
+</html>
